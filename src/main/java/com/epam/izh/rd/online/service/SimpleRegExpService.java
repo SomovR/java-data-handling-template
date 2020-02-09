@@ -1,5 +1,9 @@
 package com.epam.izh.rd.online.service;
 
+import java.io.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class SimpleRegExpService implements RegExpService {
 
     /**
@@ -11,7 +15,31 @@ public class SimpleRegExpService implements RegExpService {
      */
     @Override
     public String maskSensitiveData() {
-        return null;
+        File file = new File("src/main/resources/sensitive_data.txt");
+        BufferedReader reader = null;
+        String str = null;
+        Pattern pattern;
+        Matcher matcher;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            str = reader.readLine();
+            pattern = Pattern.compile("([0-9]+)\\s([0-9]+)\\s([0-9]+)\\s([0-9]+)");
+            matcher = pattern.matcher(str);
+            if (matcher.find()) {
+                str = matcher.replaceAll("$1 **** **** $4");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return str;
     }
 
     /**
@@ -22,6 +50,35 @@ public class SimpleRegExpService implements RegExpService {
      */
     @Override
     public String replacePlaceholders(double paymentAmount, double balance) {
-        return null;
+        File file = new File("src/main/resources/sensitive_data.txt");
+        BufferedReader reader = null;
+        String str = null;
+        Pattern pattern;
+        Matcher matcher;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            str = reader.readLine();
+            pattern = Pattern.compile("\\$\\{payment_amount}");
+            matcher = pattern.matcher(str);
+            if (matcher.find()) {
+                str = matcher.replaceAll(String.valueOf((int)paymentAmount));
+            }
+            pattern = Pattern.compile("\\$\\{balance}");
+            matcher = pattern.matcher(str);
+            if (matcher.find()) {
+                str = matcher.replaceAll(String.valueOf((int)balance));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return str;
     }
 }
